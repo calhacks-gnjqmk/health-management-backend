@@ -1,1 +1,0 @@
-This branch contains the testing for the facial_rec repository. Instructions for running are on the README

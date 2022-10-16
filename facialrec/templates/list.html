@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>
+        User images
+    </title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Picture</th>
+        </tr>
+        {% for (name, path) in pics %}
+        <tr>
+            <td>{{ name }}</td>
+            <td><img src="{{ path }}" alt="{{ name }}" height="256px"></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>`

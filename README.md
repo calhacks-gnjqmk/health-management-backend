@@ -14,6 +14,12 @@ conda activate healthEnv
 python3 runPose.py
 ```
 
+## Running the Flask Application
+```
+cd facialrec
+flask run -h 0.0.0.0
+```
+
 # Branches
 - facial-rec
 - pose

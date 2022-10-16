@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <head>
-  <title>Upload User</title>
+  <title>Detect Posture</title>
 </head>
 
 <body>
@@ -14,12 +14,10 @@
   </ul>
   {% endif %}
   {% endwith %}
-  <h1>Upload User</h1>
-  <form method=post enctype=multipart/form-data action=upload>
-    <p>User image</p>
+  <h1>Detect Posture</h1>
+  <form method=post enctype=multipart/form-data action=detect>
+    <p>Image</p>
     <input type=file name=file>
-    <p>User name</p>
-    <input type=text name=name>
     <input type=submit value=Upload>
   </form>
 </body>

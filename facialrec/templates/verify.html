@@ -1,8 +1,19 @@
 <!DOCTYPE html>
+
 <head>
   <title>Verify User</title>
 </head>
-  <body>
+
+<body>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <ul class=flashes>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
   <h1>Verify User</h1>
   <form method=post enctype=multipart/form-data action=verify>
     <p>User image</p>

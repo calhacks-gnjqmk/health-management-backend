@@ -4,13 +4,15 @@ import time
 import numpy
 import cv2
 import pathlib
-from flask import Flask, Response, render_template, request
+from flask import Flask, Response, render_template, request, flash, redirect
 from werkzeug.utils import secure_filename
 from PIL import Image
 
 # Facial Recognition
 import face_recognition
 from simple_facerec import SimpleFacerec
+
+from pose_rec import PostureRec
 
 # Flask App
 app = Flask(__name__)
@@ -20,10 +22,12 @@ cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 app.config['UPLOAD_FOLDER'] = "./static/images"
+app.config['SECRET_KEY'] = "randomsecret"
 
 # Encode faces from a folder
 sfr = SimpleFacerec()
 sfr.load_encoding_images(app.config['UPLOAD_FOLDER'])
+pr = PostureRec()
 
 # Function to encode facial recognition images on cv2 capture
 def facial_recognition():
@@ -53,7 +57,14 @@ def verify():
     if request.method == 'GET':
         return render_template('verify.html')
     else:
-        image = cv2.imdecode(numpy.fromstring(request.files['file'].read(), numpy.uint8), cv2.IMREAD_UNCHANGED)
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        image = cv2.imdecode(numpy.fromstring(file.read(), numpy.uint8), cv2.IMREAD_UNCHANGED)
         face_locations, face_names = sfr.detect_known_faces(image)
         name = request.form['name']
         for face_loc, face_name in zip(face_locations, face_names):
@@ -74,12 +85,34 @@ def upload():
         return render_template('upload.html')
     else:
         name = request.form['name']
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
         file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
         filename = generate_filename(name, file.filename)
         pathname = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(pathname)
         sfr.load_encoding_images("./static/images/")
         response = Response("Uploaded to {}!\n".format(pathname))
+        response.headers["content-type"] = "text/plain"
+        return response
+
+@app.route('/detect', methods = ['GET', 'POST'])
+def detect():
+    if request.method == 'GET':
+        return render_template('detect.html')
+    else:
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        response = Response(pr.detect_posture(file))
         response.headers["content-type"] = "text/plain"
         return response
 
